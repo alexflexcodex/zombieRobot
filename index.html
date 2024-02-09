@@ -1,0 +1,641 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Zombie Robot</title>
+    <meta name="description" content="Free Zombie Robot FPS Games based on YUKA and THREEJS">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    <style>
+        @font-face {
+            font-family: horror;
+            src: url(@/assets/font/robot.otf);
+        }
+
+        body {
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Monospace;
+            font-size: 13px;
+            line-height: 24px;
+            overscroll-behavior: none;
+        }
+
+        table {
+            border: 1px solid #30e109;
+            width: 100%;
+        }
+
+        td {
+            border: 1px solid #1ba290;
+        }
+
+        input {
+            text-transform: uppercase
+        }
+
+        thead,
+        tfoot {
+            background-color: #333;
+            color: #fff;
+        }
+
+
+        button {
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        #intro {
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ffffff;
+            font-size: 40;
+            z-index: 999;
+        }
+
+        #intro.hidden {
+            display: none;
+        }
+
+        #intro .sub {
+            font-size: 20;
+        }
+
+        #loading-screen {
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000000;
+            z-index: 1000;
+            opacity: 1;
+            transition: 0.5s opacity;
+        }
+
+        #loading-screen.fade-out {
+            opacity: 0;
+        }
+
+        .spinner {
+            margin: 100px auto;
+            width: 80px;
+            height: 40px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .spinner>div {
+            background-color: #ffffff;
+            height: 100%;
+            width: 6px;
+            display: inline-block;
+
+            -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+            animation: sk-stretchdelay 1.2s infinite ease-in-out;
+        }
+
+        .spinner .rect2 {
+            -webkit-animation-delay: -1.1s;
+            animation-delay: -1.1s;
+        }
+
+        .spinner .rect3 {
+            -webkit-animation-delay: -1.0s;
+            animation-delay: -1.0s;
+        }
+
+        .spinner .rect4 {
+            -webkit-animation-delay: -0.9s;
+            animation-delay: -0.9s;
+        }
+
+        .spinner .rect5 {
+            -webkit-animation-delay: -0.8s;
+            animation-delay: -0.8s;
+        }
+
+        @-webkit-keyframes sk-stretchdelay {
+
+            0%,
+            40%,
+            100% {
+                -webkit-transform: scaleY(0.4)
+            }
+
+            20% {
+                -webkit-transform: scaleY(1.0)
+            }
+        }
+
+        @keyframes sk-stretchdelay {
+
+            0%,
+            40%,
+            100% {
+                transform: scaleY(0.4);
+                -webkit-transform: scaleY(0.4);
+            }
+
+            20% {
+                transform: scaleY(1.0);
+                -webkit-transform: scaleY(1.0);
+            }
+        }
+
+        /* hide some information on small devices */
+
+        @media screen and (max-width: 414px) {
+            #info {
+                display: none;
+            }
+
+            .dg {
+                display: none;
+            }
+        }
+
+        #info {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            /* TODO Solve this in HTML */
+        }
+
+        a,
+        button,
+        input,
+        select {
+            pointer-events: auto;
+        }
+
+        .lil-gui {
+            z-index: 2 !important;
+            /* TODO Solve this in HTML */
+        }
+
+        @media all and (max-width: 640px) {
+            .lil-gui.root {
+                right: auto;
+                top: auto;
+                max-height: 50%;
+                max-width: 80%;
+                bottom: 0;
+                left: 0;
+            }
+        }
+
+        #overlay {
+            position: absolute;
+            font-size: 16px;
+            z-index: 2;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        #visor {
+            position: absolute;
+            font-size: 16px;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            pointer-events: none;
+
+        }
+
+        #overlay button {
+            background: transparent;
+            border: 0;
+            border: 1px solid rgb(255, 255, 255);
+            border-radius: 4px;
+            color: #ffffff;
+            padding: 12px 18px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        #notSupported {
+            width: 50%;
+            margin: auto;
+            background-color: #f00;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        #status {
+            position: absolute;
+            display: flex;
+
+            justify-content: left;
+            font-size: 10px;
+            color: #ffffff;
+            text-align: left;
+            line-height: 20px;
+            width: 20%;
+            bottom: 0;
+        }
+
+        #status>div {
+            background-color: #282828;
+            width: 400px;
+            padding: 1em;
+        }
+
+        #status>div>span {
+            display: inline-block;
+        }
+
+
+
+        #time {
+            position:
+                absolute;
+            top:
+                0;
+            left:
+                48%;
+            width:
+                64px;
+        }
+
+        #result {
+            position:
+                absolute;
+            bottom:
+                4%;
+            left:
+                4%;
+
+        }
+
+        #game {
+            position:
+                absolute;
+            top:
+                4%;
+            left:
+                4%;
+
+        }
+
+        #hud {
+            position:
+                absolute;
+            bottom:
+                4%;
+            right:
+                4%;
+        }
+
+        #generalInfo {
+            position:
+                absolute;
+            top:
+                4%;
+            right:
+                45%;
+
+
+        }
+
+        .blinking {
+            display: none;
+            background-color: #30e109;
+            animation: blinkingBackground 2s infinite;
+
+
+
+        }
+
+        @keyframes blinkingBackground {
+            0% {
+                background-color: orange;
+            }
+
+            25% {
+                background-color: red;
+            }
+
+            50% {
+                background-color: orange;
+            }
+
+            75% {
+                background-color: red;
+            }
+
+            100% {
+                background-color: orange;
+            }
+        }
+
+
+        #lilgui {
+            border: 1px solid #30e109;
+            position:
+                absolute;
+            bottom:
+                30%;
+            right:
+                4%;
+            z-index: 10000000;
+        }
+
+
+        #engine {
+            position:
+                absolute;
+            top:
+                4%;
+            right:
+                4%;
+        }
+
+        #statsCont {
+            white-space: pre-line;
+            position:
+                absolute;
+            top:
+                20%;
+            right:
+                4%;
+        }
+
+        #minimap {
+            white-space: pre-line;
+            position:
+                absolute;
+            bottom:
+                20%;
+            left:
+                4%;
+        }
+
+        #level-transition {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 20em;
+            color: #ADD8E6;
+            transform: translate(-50%, -50%);
+            font-family: horror;
+            text-shadow: 1px 1px 2px rgb(193, 17, 17), 0 0 1em blue, 0 0 0.2em rgb(193, 17, 17);
+            display: none;
+
+
+
+        }
+
+
+        #roundsLeft {
+            font-weight:
+                bold;
+            width:
+                32px;
+        }
+
+        #ammo {
+            font-size:
+                20px;
+            opacity:
+                0.5;
+            width:
+                32px;
+        }
+
+        #gameover {
+            display:
+                none;
+            text-align:
+                center;
+        }
+
+        #intro>div {
+            text-align:
+                center;
+        }
+
+        .ui-container {
+            background-color:
+                #282828;
+            font-size:
+                12px;
+            color:
+                #ffffff;
+            text-align:
+                left;
+
+        }
+
+        .ui-container>div {
+            padding:
+                16px;
+        }
+
+        .value {
+            display:
+                inline-block;
+        }
+
+        button {
+            height:
+                20px;
+            width:
+                120px;
+            color:
+                #ffffff;
+            background:
+                transparent;
+            outline:
+                1px solid #ffffff;
+            border:
+                0px;
+            cursor:
+                pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <section id="status" style="display: none;">
+        <div id="containerRobotUI">
+
+        </div>
+    </section>
+
+    <section id="loading-screen">
+        <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+        </div>
+    </section>
+
+    <section id="intro">
+        <div id="start">
+            <p>
+                Click to Play
+            </p>
+            <p class="sub">
+                WASD to move | SPACE to jump | CLICK to shoot
+            </p>
+
+            <p class="sub">
+                🤖⚡️🤖 Save the planet from the Failure Robot 🤖⚡️🤖 !
+            </p>
+            <div id="leaderboardintro">
+
+            </div>
+            <p>
+                <button type="button" onclick="window.location.reload()">Restart Game</button>
+            </p>
+        </div>
+        <div id="gameover">
+            <p>
+                Game Over
+            </p>
+            <p class="sub">
+                You've stop <span style="color:green;" id="gameover_hits"></span> robot.
+            </p>
+            <p class="sub">
+                You've reach level <span style="color:green;" id="gameover_level"></span> .
+            </p>
+
+            <div id="leaderboard">
+            </div>
+            <p>
+                <button type="button" onclick="window.location.reload()">Restart Game</button>
+            </p>
+        </div>
+    </section>
+
+    <section id="crosshairs" class="hidden">
+        <div></div>
+    </section>
+
+    <section id="result" class="ui-container">
+        <div>
+            Robot Out:
+
+            <span id="hits" class="value"></span>
+
+            <span>|</span>
+            Level:
+            <span id="Level" class="value"></span>
+
+        </div>
+    </section>
+
+    <section id="game" class="ui-container">
+        <div>
+            hits ratio:
+
+            <span id="hitratio" class="value"></span>
+
+            <span>|</span>
+            distace:
+            <span id="distance" class="value"></span>
+
+        </div>
+    </section>
+
+    <section id="level-transition">
+        Hey
+    </section>
+
+    <section id="hud" class="ui-container">
+        <div>
+            Health:
+            <span id="playerHealth" class="value"></span>
+            <span>|</span>
+            Ammo:
+            <span id="ammo" class="value"></span>
+        </div>
+    </section>
+
+    <section id="generalInfo" class="ui-container">
+
+        <div id="outOfBounce" class="blinking">
+            👻 OUT of BOUNDRY = HEALTH DOWN 👻
+        </div>
+    </section>
+
+    <section id="lilgui" class="ui-container">
+    </section>
+
+    <section id="engine" class="ui-container">
+        <div>
+            Draw call:
+            <span id="drawcall" class="value"></span>
+            <span>|</span>
+            Triangles:
+            <span id="triangle" class="value"></span>
+        </div>
+    </section>
+
+    <section id="statsCont" class="ui-container">
+        <div id="stats">
+        </div>
+
+    </section>
+
+    <section id="minimap" class="ui-container">
+
+        <div id="map">
+        </div>
+
+    </section>
+
+    <div id="visor">
+        x
+    </div>
+
+    <div id="container"></div>
+
+    <script type="module">
+
+        import world from './World.js';
+
+        world.init();
+
+    </script>
+
+</body>
+
+</html>
