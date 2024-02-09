@@ -6,7 +6,8 @@
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+[THREEJS](https://github.com/mrdoob/three.js)
+[YUKA](https://github.com/Mugen87/yuka)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -20,5 +21,5 @@ This section should list any major frameworks/libraries used to bootstrap your p
 ## Roadmap
 
 - [ ] Add mobile joystick
-- [ ] Add improve efficiency
+- [ ] Improve efficiency
 
