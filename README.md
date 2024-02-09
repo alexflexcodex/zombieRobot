@@ -6,13 +6,12 @@
 
 ### Built With
 
-[THREEJS](https://github.com/mrdoob/three.js)
-[YUKA](https://github.com/Mugen87/yuka)
+- [THREEJS](https://github.com/mrdoob/three.js)
+- [YUKA](https://github.com/Mugen87/yuka)
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-* npm
   ```sh
   npm install
   npx vite
