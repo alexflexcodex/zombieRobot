@@ -1,7 +1,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![alt text](https://github.com/alexflexcodex/zombieRobot/blob/main/1.png?raw=true)
+![alt text](https://github.com/alexflexcodex/zombieRobot/blob/main/image/2.png?raw=true)
+
 
 ### Built With
 
