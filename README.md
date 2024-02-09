@@ -1,7 +1,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+![alt text](https://github.com/alexflexcodex/zombieRobot/blob/main/1.png?raw=true)
 
 ### Built With
 
